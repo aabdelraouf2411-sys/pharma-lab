@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pharma Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Source+Sans+3:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap">
+<style>
+/* Pharma Lab: same build as Vet Path Practical (flat colour, square edges, ruled lines, a marked exam sheet), recoloured in greens, white and blue. */
+:root {
+  --bg: #0A3A2C;
+  --panel: #0F4D3A;
+  --deep: #062A1F;
+  --edge: rgba(255,255,255,.2);
+  --line: rgba(255,255,255,.2);
+  --white: #F2FBF6;
+  --muted: #B7D6C8;
+  --mint: #7BE0A6;
+  --mint-hi: #9DEBBE;
+  --green: #1FB874;
+  --leaf: #0F7A55;
+  --blue: #2E86DE;
+  --sky: #7CC6FE;
+  --paper: #F2FAF5;
+  --ink: #0A3A2C;
+  --ink-muted: #4C6B5E;
+  --wrong: #FF8A80;
+  --display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --body: "Source Sans 3", "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body { margin: 0; background: var(--bg); color: var(--white); font: 400 1.125rem/1.6 var(--body); overflow-x: clip; }
+h1, h2, h3, h4, p, ol, ul, dl, dd, figure { margin: 0; padding: 0; }
+ol, ul { list-style: none; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+button { font: inherit; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+section, .case { scroll-margin-top: 90px; }
+.sr { position: absolute; width: 1px; height: 1px; opacity: 0; margin: 0; }
+[hidden] { display: none !important; }
+
+.wrap { max-width: 1360px; margin-inline: auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 720px) { .wrap { padding-left: max(48px, env(safe-area-inset-left, 0px)); padding-right: max(48px, env(safe-area-inset-right, 0px)); } }
+.band { padding-block: clamp(72px, 9vw, 130px); }
+h1, h2, h3, h4, .brand, .case-no, .q-lead { font-family: var(--display); font-weight: 500; letter-spacing: -.012em; }
+h2 { font-size: clamp(2.5rem, 5.4vw, 4.5rem); line-height: 1.06; text-wrap: balance; }
+.head { margin-bottom: clamp(32px, 4.5vw, 56px); display: grid; gap: 12px; }
+.lede { color: var(--muted); max-width: 62ch; font-size: 1.125rem; }
+
+/* Bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--edge); }
+.bar .wrap { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 28px; flex-wrap: wrap; padding-block: 12px; }
+.brand { font-size: 1.3rem; font-weight: 600; text-decoration: none; letter-spacing: 0; }
+.brand i { font-style: italic; color: var(--mint); }
+.bar nav { display: flex; gap: 22px; overflow-x: auto; max-width: 100%; scrollbar-width: none; }
+.bar nav a { font-size: .9375rem; font-weight: 500; text-decoration: none; white-space: nowrap; padding-block: 3px; background: linear-gradient(var(--mint), var(--mint)) 0 100% / 0 1px no-repeat; transition: background-size .4s; }
+.bar nav a:hover { background-size: 100% 1px; }
+.progress { position: fixed; left: 0; right: 0; top: 0; height: 3px; background: var(--green); transform: scaleX(0); transform-origin: 0 50%; z-index: 30; }
+
+/* Buttons */
+.btn-main { cursor: pointer; display: inline-block; text-decoration: none; background: var(--mint); color: var(--ink); border: 1px solid var(--mint); border-radius: 3px; padding: 13px 22px; font-weight: 600; font-size: 1rem; line-height: 1.2; transition: background-color .15s; }
+.btn-main:hover { background: var(--mint-hi); border-color: var(--mint-hi); }
+.btn-main:disabled { background: none; border-color: var(--edge); color: var(--muted); cursor: not-allowed; }
+.btn-quiet { cursor: pointer; display: inline-block; text-decoration: none; background: none; color: var(--white); border: 1px solid rgba(255,255,255,.45); border-radius: 3px; padding: 12px 20px; font-weight: 600; font-size: 1rem; line-height: 1.2; transition: background-color .15s, border-color .15s; }
+.btn-quiet:hover { background: rgba(255,255,255,.08); border-color: var(--white); }
+
+/* Cover */
+.cover { padding-block: clamp(40px, 6vw, 84px) 0; background: var(--bg); }
+@media (min-width: 1000px) { .cover { background: linear-gradient(90deg, var(--bg) 0 58%, var(--green) 58% 100%); } }
+.cover > .wrap { display: grid; gap: 40px; align-items: center; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1000px) { .cover > .wrap { grid-template-columns: minmax(0, 1.25fr) minmax(0, .85fr); gap: 96px; padding-bottom: clamp(40px, 5vw, 72px); } }
+.cover-copy { display: grid; gap: clamp(20px, 2.6vw, 30px); min-width: 0; }
+.kicker { font-size: .875rem; font-weight: 600; letter-spacing: .02em; color: var(--mint); }
+.cover h1 { font-size: clamp(3rem, 5.8vw, 5.5rem); line-height: 1.04; letter-spacing: -.015em; text-wrap: pretty; }
+.cover h1 em { font-style: italic; color: var(--mint); }
+.cover .sub { font-size: clamp(1.1875rem, 1.9vw, 1.4rem); line-height: 1.45; max-width: 38ch; }
+.starts { display: flex; flex-wrap: wrap; gap: 12px; }
+.starts .btn-main, .starts .btn-quiet { font-size: 1.0625rem; padding: 15px 26px; }
+.so-far { color: var(--muted); font-size: 1rem; max-width: 46ch; }
+.so-far b { color: var(--mint); font-weight: 600; }
+
+.sheet-wrap { position: relative; min-width: 0; }
+@media (max-width: 999px) { .sheet-wrap { background: var(--green); margin-inline: -20px; padding: 28px 24px 22px; } }
+@media (min-width: 720px) and (max-width: 999px) { .sheet-wrap { margin-inline: -48px; padding-inline: 48px; } .sheet-stack { max-width: 540px; } }
+.sheet-stack { position: relative; }
+.sheet-stack::before, .sheet-stack::after { content: ""; position: absolute; inset: 6px -4px -6px 4px; background: #EDF5EF; transform: rotate(-1.6deg); box-shadow: 4px 4px 0 rgba(6,42,31,.5); }
+.sheet-stack::after { inset: 3px 3px -3px -2px; background: #F9FCFA; transform: rotate(.5deg); }
+.sheet { position: relative; z-index: 1; padding: 22px 24px 52px 46px; background-color: #FFFFFD; color: #16302A; transform: rotate(1.4deg); box-shadow: 8px 8px 0 var(--bg); background-image: repeating-linear-gradient(transparent 0 33px, rgba(46,134,222,.22) 33px 34px); background-position: 0 66px; }
+.sheet::before { content: ""; position: absolute; left: 32px; top: 0; bottom: 0; width: 1px; background: rgba(31,184,116,.6); }
+.sheet-head { display: flex; justify-content: space-between; gap: 12px; font-size: .8125rem; font-weight: 600; height: 44px; align-items: center; }
+.sheet p { height: 34px; line-height: 34px; display: flex; gap: 10px; white-space: nowrap; overflow: hidden; }
+.sheet small { font-size: .8125rem; flex: none; width: 64px; color: #5A7068; }
+.sheet .hand { font: 500 1.4375rem/34px "Caveat", "Segoe Script", cursive; color: #1C5FB8; }
+.sheet .mark { position: absolute; right: 18px; top: 74px; width: 58px; height: 58px; overflow: visible; }
+.sheet .mark path { fill: none; stroke: #0F9A5F; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.sheet .score { position: absolute; right: 16px; bottom: 14px; font: 600 1.75rem/1 "Caveat", "Segoe Script", cursive; color: #0F9A5F; transform: rotate(-4deg); }
+@media (prefers-reduced-motion: no-preference) {
+  .sheet .mark path { stroke-dashoffset: 1; animation: draw .7s ease-out .6s forwards; }
+  .sheet .score { opacity: 0; animation: pop .35s cubic-bezier(.3,1.6,.5,1) 1.3s forwards; }
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(1.5) rotate(-6deg); } to { opacity: 1; transform: rotate(-4deg); } }
+.sheet-note { margin-top: 16px; font-size: .8125rem; color: var(--ink); font-weight: 500; }
+@media (max-width: 480px) { .sheet { padding-left: 42px; padding-right: 14px; } .sheet .hand { font-size: 1.1875rem; } .sheet small { width: 54px; } }
+
+.groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 760px) { .groups { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .groups { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.g-card { display: grid; gap: 4px; align-content: start; padding: 18px 18px 16px; text-decoration: none; color: var(--ink); min-width: 0; }
+.g-card b { font: 500 clamp(1.125rem, 1.6vw, 1.375rem)/1.18 var(--display); overflow-wrap: anywhere; hyphens: auto; }
+.g-card span { font-size: .875rem; }
+.g-card i { display: block; height: 4px; background: rgba(6,42,31,.2); margin-top: 8px; }
+.g-card i u { display: block; height: 100%; width: 0; background: currentColor; transition: width .8s; }
+.g-card:hover b { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.g-card.dark { color: var(--white); }
+.g-card.dark i { background: rgba(255,255,255,.3); }
+
+/* Practice */
+.train { background: var(--bg); }
+.dash { display: grid; gap: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--edge); }
+@media (min-width: 860px) { .dash { grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.1fr); gap: 44px; align-items: center; } }
+.ring b { display: block; font: 500 clamp(4rem, 8vw, 6.5rem)/1 var(--display); color: var(--mint); }
+.ring small { font-size: .9375rem; color: var(--muted); }
+.tally { font-size: 1.125rem; line-height: 1.5; }
+.tally b { color: var(--mint); font-weight: 600; }
+.bars { display: grid; gap: 8px; min-width: 0; }
+.bar-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 40px; gap: 12px; align-items: center; font-size: .9375rem; }
+.bar-row b { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bar-track { height: 6px; background: rgba(255,255,255,.12); display: block; }
+.bar-track i { display: block; height: 100%; width: 0; background: var(--green); transition: width .8s; }
+.resume { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; background: var(--mint); color: var(--ink); padding: 16px 20px; margin-top: 24px; }
+.resume p { flex: 1 1 240px; font-weight: 600; }
+.resume .btn-main { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.resume .btn-quiet { color: var(--ink); border-color: var(--ink); }
+.modes { display: grid; gap: 20px; margin-top: 28px; }
+@media (min-width: 860px) { .modes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.mode, .records > div, .try-one { min-width: 0; display: grid; gap: 18px; align-content: start; padding: clamp(22px, 3vw, 36px); background: var(--panel); border-top: 3px solid var(--green); }
+.records > div { border-top-color: var(--sky); }
+.try-one { border-top-color: var(--blue); }
+.mode h3 { font-size: clamp(2rem, 3.2vw, 2.75rem); line-height: 1.05; }
+.mode > p { color: var(--muted); }
+.opt { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.opt legend { padding: 0 0 8px; font-size: .875rem; font-weight: 600; color: var(--mint); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; cursor: pointer; }
+.chip span { display: block; padding: 7px 13px; border: 1px solid var(--edge); border-radius: 3px; font-size: .9375rem; font-weight: 500; transition: background-color .2s, color .2s, border-color .2s; }
+.chip span:hover { border-color: rgba(255,255,255,.5); }
+.chip input:checked + span { background: var(--mint); border-color: var(--mint); color: var(--ink); font-weight: 600; }
+.chip input:focus-visible + span { outline: 2px solid var(--sky); outline-offset: 2px; }
+.check { display: flex; gap: 10px; align-items: center; cursor: pointer; }
+.check input { width: 19px; height: 19px; accent-color: var(--green); flex: none; }
+.total { color: var(--white); font-size: .97rem; }
+.go { display: flex; flex-wrap: wrap; gap: 12px; }
+.records { display: grid; gap: 20px; margin-top: 20px; }
+@media (min-width: 860px) { .records { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.records h4 { font-size: 1.5rem; }
+.list li { padding-block: 8px; border-top: 1px solid var(--edge); display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .9375rem; }
+.list li b { font-weight: 600; }
+.list li a { text-decoration: none; }
+.list li a:hover { text-decoration: underline; }
+.list time { color: var(--muted); margin-left: auto; }
+.list .empty { color: var(--muted); }
+.try-one .q-lead { font-size: 1.75rem; line-height: 1.2; }
+.try-row { display: grid; gap: 14px; }
+.pairpics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; background: var(--deep); }
+.pairpics figure { position: relative; min-width: 0; overflow: hidden; background: var(--deep); }
+.pairpics figure.ref { background: #fff; }
+.pairpics img { width: 100%; height: clamp(200px, 28vw, 360px); object-fit: contain; transition: transform .45s cubic-bezier(.2,.7,.2,1); cursor: zoom-in; }
+.pairpics figcaption { position: absolute; left: 0; top: 0; padding: 4px 9px; font-size: .75rem; font-weight: 600; background: rgba(6,42,31,.82); color: var(--white); }
+.pairpics figure.ref figcaption { background: rgba(46,134,222,.92); }
+.pairpics .none { display: grid; place-items: center; height: clamp(180px, 26vw, 340px); padding: 18px; text-align: center; color: var(--muted); font-size: .9375rem; }
+img.zoomed { transform: scale(2.2); cursor: zoom-out; }
+.try-ans { display: grid; gap: 6px; padding: 14px 0 0; border-top: 1px solid var(--edge); }
+.try-ans .name { font: 500 1.75rem/1.15 var(--display); }
+.t-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 28px; color: var(--muted); font-size: 1rem; }
+.t-foot p { flex: 1 1 260px; }
+.t-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: var(--white); }
+
+/* Paper sections */
+.paper { background: var(--paper); color: var(--ink); --edge: rgba(10,58,44,.18); --line: rgba(10,58,44,.18); }
+.paper .lede { color: var(--ink-muted); }
+.steps { display: grid; gap: 0; counter-reset: s; border-top: 1px solid var(--line); }
+@media (min-width: 860px) { .steps { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; border-top: 0; } }
+.steps li { counter-increment: s; display: grid; gap: 6px; padding-block: 16px; border-bottom: 1px solid var(--line); }
+@media (min-width: 860px) { .steps li { border-top: 2px solid var(--green); border-bottom: 0; padding-top: 14px; } .steps li:nth-child(2) { border-top-color: var(--blue); } .steps li:nth-child(3) { border-top-color: var(--leaf); } .steps li:nth-child(4) { border-top-color: var(--sky); } }
+.steps li::before { content: counter(s); font: italic 500 2.25rem/1 var(--display); color: var(--leaf); }
+.steps b { font: 500 1.5rem/1.15 var(--display); }
+.steps span { color: var(--ink-muted); font-size: 1rem; }
+.rules { margin-top: 32px; display: grid; gap: 4px; font-size: 1rem; color: var(--ink-muted); max-width: 80ch; }
+.rules b { color: var(--ink); font-weight: 600; }
+
+/* Atlas */
+.controls { background: var(--panel); border-block: 1px solid var(--edge); }
+.controls .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 36px; padding-block: 10px; }
+.group { display: flex; align-items: center; gap: 4px 16px; flex-wrap: wrap; }
+.g-name { font-size: .875rem; font-weight: 600; color: var(--mint); }
+.group label { cursor: pointer; font-weight: 500; font-size: .9375rem; padding-block: 2px; background: linear-gradient(var(--mint), var(--mint)) 0 100% / 0 2px no-repeat; transition: background-size .4s; }
+#m-test:checked ~ .controls [for="m-test"], #m-study:checked ~ .controls [for="m-study"] { background-size: 100% 2px; font-weight: 700; }
+#m-test:focus-visible ~ .controls [for="m-test"], #m-study:focus-visible ~ .controls [for="m-study"] { outline: 2px solid var(--white); outline-offset: 3px; }
+.hint { margin-left: auto; font-size: .875rem; color: var(--muted); }
+.hint .touch { display: none; }
+@media (hover: none) { .hint .mouse { display: none; } .hint .touch { display: inline; } }
+@media (max-width: 899px) { .hint { margin-left: 0; } }
+.chapter { padding-block: clamp(56px, 7vw, 96px) 0; }
+.chapter:last-of-type { padding-bottom: clamp(64px, 8vw, 110px); }
+.ch-head { display: grid; gap: 8px; margin-bottom: 28px; }
+@media (min-width: 860px) { .ch-head { grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 40px; } }
+.ch-no { display: inline-block; margin-bottom: 10px; padding: 3px 10px; font-size: .8125rem; font-weight: 700; background: var(--chip, var(--mint)); color: var(--ink); }
+.ch-meta { color: var(--muted); font-size: .97rem; }
+@media (min-width: 860px) { .ch-meta { text-align: right; padding-bottom: 8px; } }
+.cases { display: grid; gap: 52px 40px; align-items: start; }
+@media (min-width: 900px) { .cases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.case { min-width: 0; display: grid; gap: 10px; }
+.case-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.case-no { font-style: italic; font-size: 1.25rem; color: var(--white); }
+.note { font-size: .875rem; font-weight: 600; color: var(--sky); }
+.reveal { cursor: pointer; display: inline-flex; gap: 8px; align-items: center; padding-block: 8px; font-weight: 600; color: var(--mint); text-decoration: underline; text-underline-offset: 3px; justify-self: start; }
+.toggle:focus-visible + .reveal { outline: 2px solid var(--white); outline-offset: 3px; }
+.hide-t { display: none; }
+.toggle:checked + .reveal .show-t, .case:target .reveal .show-t { display: none; }
+.toggle:checked + .reveal .hide-t, .case:target .reveal .hide-t { display: inline; }
+.ans { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .3s ease, visibility .3s; }
+.ans-in { overflow: hidden; min-height: 0; display: grid; gap: 10px; align-content: start; }
+.toggle:checked ~ .ans, .case:target .ans, #m-study:checked ~ .chapter .ans { grid-template-rows: 1fr; visibility: visible; }
+#m-study:checked ~ .chapter .reveal { display: none; }
+.ans h3 { font-size: clamp(1.625rem, 2.6vw, 2.125rem); line-height: 1.12; }
+.facts4 { display: grid; gap: 0; border-top: 1px solid var(--edge); }
+.facts4 > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; padding-block: 8px; border-bottom: 1px solid var(--edge); }
+.facts4 dt { font-size: .875rem; font-weight: 600; color: var(--mint); padding-top: 2px; }
+.facts4 dd { font-size: 1.0625rem; }
+@media (max-width: 480px) { .facts4 > div { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+.credit { font-size: .8125rem; color: var(--muted); }
+.credit a { color: inherit; }
+
+/* Table */
+.tbl-wrap { overflow-x: auto; }
+.drug-table { width: 100%; border-collapse: collapse; min-width: 720px; }
+.drug-table th { text-align: left; font-size: .875rem; font-weight: 600; color: var(--leaf); padding: 0 20px 12px 0; }
+.drug-table td { padding: 11px 20px 11px 0; border-top: 1px solid var(--line); vertical-align: top; font-size: 1rem; }
+.drug-table td:first-child { font-weight: 600; }
+.drug-table tbody tr:hover { background: rgba(31,184,116,.08); }
+.drug-table .grp td { padding-top: 26px; border-top: 0; font: 500 1.375rem/1.2 var(--display); color: var(--ink); }
+.drug-table .grp td span { display: inline-block; width: 14px; height: 14px; margin-right: 10px; vertical-align: 1px; background: var(--chip); }
+.drug-table .grp td small { font: 400 .9375rem var(--body); color: var(--ink-muted); margin-left: 8px; }
+.drug-table a { text-decoration: none; }
+.drug-table a:hover { text-decoration: underline; }
+.off { font-size: .75rem; font-weight: 700; color: #1C5FB8; margin-left: 6px; white-space: nowrap; }
+
+/* Easily confused */
+.pairs { border-top: 1px solid var(--edge); }
+.pair { display: grid; gap: 6px; padding: 18px 0; border-bottom: 1px solid var(--edge); }
+@media (min-width: 860px) { .pair { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 32px; align-items: baseline; } }
+.pair h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); line-height: 1.2; }
+.pair h3 i { color: var(--mint); }
+.pair p { color: var(--muted); }
+
+/* Index */
+.idx-grid { display: grid; gap: 36px; }
+@media (min-width: 760px) { .idx-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .idx-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.idx h3 { font-size: 1.375rem; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid var(--chip); }
+.idx li a { display: block; padding-block: 3px; text-decoration: none; font-size: 1rem; }
+.idx li a:hover { text-decoration: underline; color: var(--leaf); }
+
+footer { padding-block: 44px; color: var(--muted); font-size: .875rem; border-top: 1px solid var(--edge); }
+footer .wrap { display: grid; gap: 12px; }
+footer .brand { color: var(--white); }
+footer details summary { cursor: pointer; color: var(--white); font-weight: 600; }
+footer details ul { margin-top: 10px; columns: 2 280px; column-gap: 32px; }
+footer details li { break-inside: avoid; padding-block: 2px; }
+
+/* Exam room */
+html.in-room, html.in-room body { overflow: hidden; }
+.room { position: fixed; inset: 0; z-index: 40; background: var(--bg); overflow-y: auto; overscroll-behavior: contain; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.room-bar { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--edge); }
+.room-bar-in { max-width: 1240px; margin-inline: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 20px; min-height: 62px; }
+.room-bar .btn-main, .room-bar .btn-quiet { padding: 8px 12px; font-size: .875rem; }
+.room-title { font: 500 1.25rem/1.2 var(--display); }
+.spacer { flex: 1 1 0; }
+.clock { font: 600 1.75rem/1 var(--body); font-variant-numeric: tabular-nums; }
+.clock.urgent { color: var(--wrong); }
+.count { color: var(--muted); font-size: .875rem; }
+.qtrack { height: 3px; background: rgba(255,255,255,.12); }
+.qtrack i { display: block; height: 100%; background: var(--green); width: 0; transition: width .4s; }
+.room-body { max-width: 1240px; margin-inline: auto; padding: 28px 20px 72px; display: grid; gap: 32px; }
+.q-card { display: grid; gap: 22px; min-width: 0; }
+@media (min-width: 900px) { .q-card { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 36px; align-items: start; } }
+.q-side { min-width: 0; display: grid; gap: 16px; align-content: start; }
+.q-card .pairpics img, .q-card .pairpics .none { height: clamp(220px, 34vw, 420px); }
+.q-lead { font-size: clamp(1.75rem, 3vw, 2.25rem); line-height: 1.15; }
+.fields { display: grid; gap: 12px; }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label { font-size: .875rem; font-weight: 600; color: var(--mint); }
+.field input { width: 100%; background: var(--panel); color: var(--white); border: 1px solid var(--edge); border-radius: 2px; padding: 11px 12px; font: 400 1.0625rem/1.4 var(--body); }
+.field input:focus { outline: 0; border-color: var(--mint); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+.mark-head { padding: 12px 14px; border-left: 5px solid currentColor; font-size: 1rem; }
+.mark-head b { font: 600 1.5rem var(--display); margin-right: 6px; }
+.mark-head span { color: var(--muted); }
+.mark-head.s-c { color: var(--mint); background: rgba(123,224,166,.12); }
+.mark-head.s-p { color: var(--sky); background: rgba(124,198,254,.12); }
+.mark-head.s-w { color: var(--wrong); background: rgba(255,138,128,.1); }
+.checked { display: grid; gap: 0; border-top: 1px solid var(--edge); }
+.checked > div { display: grid; gap: 2px; padding-block: 10px; border-bottom: 1px solid var(--edge); }
+.checked dt { font-size: .875rem; font-weight: 600; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+.checked .yours { font-size: 1rem; overflow-wrap: anywhere; }
+.checked .yours.blank { color: var(--wrong); }
+.checked .model { font-size: 1rem; color: var(--mint); }
+.verdict { padding: 1px 7px; border-radius: 3px; font-size: .75rem; font-weight: 700; color: var(--ink); }
+.verdict.ok { background: var(--mint); }
+.verdict.part { background: var(--sky); }
+.verdict.no { background: var(--wrong); }
+.marks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.marks button { cursor: pointer; padding: 13px 4px; background: none; color: var(--white); border: 1px solid var(--edge); border-radius: 3px; font-weight: 600; font-size: 1rem; transition: background-color .15s, border-color .15s; }
+.marks .m-c:hover, .marks .m-c[aria-pressed="true"] { background: var(--mint); border-color: var(--mint); color: var(--ink); }
+.marks .m-p:hover, .marks .m-p[aria-pressed="true"] { background: var(--sky); border-color: var(--sky); color: var(--ink); }
+.marks .m-w:hover, .marks .m-w[aria-pressed="true"] { background: var(--wrong); border-color: var(--wrong); color: var(--ink); }
+.change-mark { display: block; padding: 4px 0; background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: .875rem; text-align: left; }
+.result { display: grid; gap: 22px; max-width: 760px; }
+.result .big { font: 500 clamp(5rem, 16vw, 8rem)/1 var(--display); color: var(--mint); }
+.result .lede { font-size: 1.1875rem; }
+.missed li { padding-block: 8px; border-top: 1px solid var(--edge); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.missed li span { color: var(--muted); }
+
+/* Loupe */
+.loupe { position: fixed; z-index: 50; left: 0; top: 0; width: 210px; height: 210px; border-radius: 50%; pointer-events: none; background-color: var(--deep); background-repeat: no-repeat; box-shadow: 0 0 0 1px var(--mint), 0 0 0 6px var(--bg), 0 0 0 7px var(--sky), 0 18px 50px rgba(0,0,0,.6); opacity: 0; transition: opacity .18s; }
+.loupe.on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .bar-track i, .g-card i u { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top">Pharma <i>Lab</i></a>
+    <nav aria-label="Sections">
+      <a href="#train">Practice</a>
+      <a href="#format">How to answer</a>
+      <a href="#atlas">Samples</a>
+      <a href="#table">Summary table</a>
+      <a href="#traps">Easily confused</a>
+      <a href="#index">All samples</a>
+    </nav>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<main id="top">
+  <section class="cover">
+    <div class="wrap">
+      <div class="cover-copy">
+        <p class="kicker">Practical Pharmacology · Section samples</p>
+        <h1>Pharma Lab: <em>name it</em>, then say what it does</h1>
+        <p class="sub">27 crude drugs from the section, each shown as the lab jar beside a clear reference photo, with mock papers that mark themselves.</p>
+        <div class="starts">
+          <button type="button" class="btn-main" id="h-start">Start a mock paper</button>
+          <button type="button" class="btn-quiet" id="h-drill">Quick drill</button>
+        </div>
+        <p class="so-far" id="h-sofar">Every sample asks for four things: the <b>name</b>, the <b>active principle</b>, the <b>action</b> and the <b>therapeutic use</b>.</p>
+      </div>
+      <div class="sheet-wrap">
+        <div class="sheet-stack"><figure class="sheet" aria-label="Example of a marked answer on an exam sheet">
+          <div class="sheet-head"><span>Mock paper</span><span>Sample 7</span></div>
+          <p><small>Name</small><span class="hand">Ipecac root</span></p>
+          <p><small>Active</small><span class="hand">emetine</span></p>
+          <p><small>Action</small><span class="hand">expectorant</span></p>
+          <p><small>Use</small><span class="hand">bronchitis</span></p>
+          <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path pathLength="1" d="M8 36 C14 42 20 50 25 56 C33 38 44 20 58 7"/></svg>
+          <span class="score" aria-hidden="true">4 / 4</span>
+        </figure></div>
+        <p class="sheet-note">An example answer, not your work.</p>
+      </div>
+    </div>
+    <nav class="groups" id="groups" aria-label="Pharmacological groups"></nav>
+  </section>
+
+  <section class="train band" id="train"><div class="wrap">
+    <div class="head"><h2>Practice</h2></div>
+    <div class="dash">
+      <div class="ring"><b id="t-ready">0%</b><small>overall</small></div>
+      <p class="tally">You have practised <b id="t-seen">0</b> of 27 samples. <b id="t-secure">0</b> are secure, with at least two correct in a row, and <b id="t-weak">0</b> need work. A sample counts fully after three correct answers in a row.</p>
+      <div class="bars" id="t-bars"></div>
+    </div>
+    <div class="resume" id="t-resume" hidden><p id="t-resume-text"></p><button type="button" class="btn-main" id="t-resume-btn">Continue</button><button type="button" class="btn-quiet" id="t-discard">Discard it</button></div>
+    <div class="modes">
+      <div class="mode">
+        <h3>Mock paper</h3>
+        <p>One sample at a time. Write the name, active principle, action and therapeutic use, then submit. Each answer is marked straight away, and small spelling slips are forgiven.</p>
+        <fieldset class="opt"><legend>Questions</legend><div class="chips">
+          <label class="chip"><input class="sr" type="radio" name="t-n" value="10"><span>10</span></label>
+          <label class="chip"><input class="sr" type="radio" name="t-n" value="15" checked><span>15</span></label>
+          <label class="chip"><input class="sr" type="radio" name="t-n" value="20"><span>20</span></label>
+          <label class="chip"><input class="sr" type="radio" name="t-n" value="all"><span>All 27</span></label>
+        </div></fieldset>
+        <label class="check"><input type="checkbox" id="t-timed"> Use a timer</label>
+        <fieldset class="opt" id="t-time-opt" hidden><legend>Time per sample</legend><div class="chips">
+          <label class="chip"><input class="sr" type="radio" name="t-min" value="1"><span>1 min</span></label>
+          <label class="chip"><input class="sr" type="radio" name="t-min" value="1.5" checked><span>1.5 min</span></label>
+          <label class="chip"><input class="sr" type="radio" name="t-min" value="2"><span>2 min</span></label>
+        </div></fieldset>
+        <fieldset class="opt"><legend>Groups</legend><div class="chips" id="t-groups"></div></fieldset>
+        <label class="check"><input type="checkbox" id="t-weakfirst"> Put my weak samples first</label>
+        <label class="check"><input type="checkbox" id="t-labonly"> Show only the lab photo (harder)</label>
+        <p class="total" id="t-total">15 samples, no timer</p>
+        <div class="go"><button type="button" class="btn-main" id="t-start">Start the paper</button></div>
+      </div>
+      <div class="mode">
+        <h3>Quick drill</h3>
+        <p>No clock. One sample at a time; a sample you get wrong comes back once at the end of the round.</p>
+        <fieldset class="opt"><legend>Focus</legend><div class="chips">
+          <label class="chip"><input class="sr" type="radio" name="t-focus" value="smart" checked><span>Weak first</span></label>
+          <label class="chip"><input class="sr" type="radio" name="t-focus" value="all"><span>Everything</span></label>
+          <label class="chip"><input class="sr" type="radio" name="t-focus" value="new"><span>Not seen yet</span></label>
+        </div></fieldset>
+        <fieldset class="opt"><legend>Samples</legend><div class="chips">
+          <label class="chip"><input class="sr" type="radio" name="t-dsize" value="10" checked><span>10</span></label>
+          <label class="chip"><input class="sr" type="radio" name="t-dsize" value="20"><span>20</span></label>
+          <label class="chip"><input class="sr" type="radio" name="t-dsize" value="all"><span>All</span></label>
+        </div></fieldset>
+        <div class="go"><button type="button" class="btn-main" id="t-drill">Start the drill</button></div>
+      </div>
+    </div>
+    <div class="records">
+      <div><h4>Mock paper scores</h4><ul class="list" id="t-history"></ul></div>
+      <div><h4>Samples to fix</h4><ul class="list" id="t-weaklist"></ul><button type="button" class="btn-quiet" id="t-drillweak" hidden>Drill all weak samples</button></div>
+      <div><h4>Your progress</h4><p class="lede" id="t-status"></p></div>
+    </div>
+    <div class="try-one" style="margin-top:20px">
+      <p class="q-lead">Try one sample</p>
+      <button type="button" class="btn-quiet" id="h-try">Show me a sample</button>
+      <div class="try-row" id="h-wrap" hidden>
+        <div class="pairpics" id="h-pics"></div>
+        <div class="row">
+          <button type="button" class="btn-main" id="h-show">Show the answer</button>
+          <button type="button" class="btn-quiet" id="h-next">Another sample</button>
+        </div>
+        <div class="try-ans" id="h-ans" aria-live="polite" hidden></div>
+      </div>
+    </div>
+    <div class="t-foot"><p>Your progress is kept in this browser. Clearing it also removes your mock paper scores.</p><button type="button" class="btn-quiet" id="t-reset">Clear my progress</button><span class="t-confirm" id="t-reset-confirm" hidden>This cannot be undone. <button type="button" class="btn-main" id="t-reset-yes">Clear everything</button><button type="button" class="btn-quiet" id="t-reset-no">Keep it</button></span></div>
+  </div></section>
+
+  <section class="paper band" id="format">
+    <div class="wrap">
+      <div class="head"><h2>How to set out an answer</h2><p class="lede">Each sample is asked the same way. Identify the jar first, then give the other three in this order.</p></div>
+      <ol class="steps">
+        <li><b>Name</b><span>The crude drug and the part used, e.g. Senna leaves, Ipecac root, Ginger rhizomes.</span></li>
+        <li><b>Active principle</b><span>The constituent responsible for the effect, e.g. Emetine, Strychnine, Tannic acid.</span></li>
+        <li><b>Action</b><span>The pharmacological group, e.g. Purgative, Expectorant, Carminative.</span></li>
+        <li><b>Therapeutic use</b><span>What it treats, e.g. Treatment of constipation, of bronchitis, of flatulent colic.</span></li>
+      </ol>
+      <div class="rules">
+        <p><b>Marking.</b> Each of the four parts is worth one mark. A sample is Correct at 3.5 out of 4 or more (small spelling slips are fine; a part with two ideas, like “arthritis, tendinitis”, gives half for each), Partly right when at least two parts are right, and Wrong otherwise. You can always change the mark yourself.</p>
+        <p><b>Two photos.</b> The left photo is the jar from the lab file, with its label hidden. The right photo is a clearer reference picture of the same drug.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="atlas" id="atlas">
+    <input class="sr" type="radio" name="mode" id="m-test" checked>
+    <input class="sr" type="radio" name="mode" id="m-study">
+    <div class="controls"><div class="wrap">
+      <div class="group" role="group" aria-label="Mode"><span class="g-name">Mode</span><label for="m-test">Test me</label><label for="m-study">Show all answers</label></div>
+      <span class="hint"><span class="mouse">Move over a picture to magnify it.</span><span class="touch">Tap a picture to enlarge it.</span></span>
+    </div></div>
+    <div id="chapters" style="display:contents"></div>
+  </div>
+
+  <section class="paper band" id="table">
+    <div class="wrap">
+      <div class="head"><h2>Summary table</h2><p class="lede">All 27 samples in the order of the section file. Samples marked “not in the lab” are on the list but have no jar on the bench yet.</p></div>
+      <div class="tbl-wrap"><table class="drug-table">
+        <thead><tr><th>Name</th><th>Active principle</th><th>Action</th><th>Therapeutic use</th></tr></thead>
+        <tbody id="tbl"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="band" id="traps">
+    <div class="wrap">
+      <div class="head"><h2>Easily confused</h2><p class="lede">Pairs that share an active principle, a look or a group, and how to keep them apart.</p></div>
+      <div class="pairs">
+        <div class="pair"><h3>Senna <i>or</i> Rhubarb</h3><p>Both purgatives with the same active principles, emodin and chrysophanic acid. Senna is thin, pale green to brown leaflets; rhubarb is a heavy, yellow-orange rhizome.</p></div>
+        <div class="pair"><h3>Krameria <i>or</i> Catechu</h3><p>Both astringents for diarrhoea, both rich in tannic acid. Krameria is a reddish-brown root; catechu is a dark brown, brittle dried extract in blocks.</p></div>
+        <div class="pair"><h3>Jaborandi <i>or</i> Calabar beans</h3><p>Both parasympathomimetic, both alternate with atropine and treat glaucoma. Jaborandi leaves give pilocarpine (direct acting); Calabar beans give eserine, physostigmine (anti-cholinesterase).</p></div>
+        <div class="pair"><h3>Croton seeds <i>or</i> Castor seeds</h3><p>Two oily seeds with very different jobs. Croton oil is a counter irritant for arthritis and tendinitis; castor oil is a purgative for constipation. Castor seeds are glossy and mottled.</p></div>
+        <div class="pair"><h3>Squill <i>or</i> Strophanthus</h3><p>Both cardiac tonics and secondary diuretics for CHF. Squill is a fleshy bulb (scillarin); Strophanthus is a seed with a feathery tuft (strophanthin).</p></div>
+        <div class="pair"><h3>Polygala, Ipecac <i>or</i> Eucalyptus</h3><p>All three expectorants for bronchitis. Two are roots (senegin, emetine); eucalyptus is leaves, and its oil is also a respiratory tract antiseptic.</p></div>
+        <div class="pair"><h3>Cinnamon bark <i>or</i> Cinchona bark</h3><p>Both barks. Cinnamon is a carminative (cinnamon oil, flatulent colic); cinchona is a stomachic (quinidine, loss of appetite).</p></div>
+        <div class="pair"><h3>Gentian, Quassia <i>or</i> Columba</h3><p>All stomachics and appetisers. Match the bitter to its plant: gentiamarine from gentian root, quassin from quassia wood, columbamine from columba root.</p></div>
+        <div class="pair"><h3>Linseed <i>or</i> Colocynth</h3><p>Both purgatives. Linseed is small, flat, glossy brown seeds (lin oil); colocynth is a dried round gourd fruit (colocynthin).</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="paper band" id="index">
+    <div class="wrap">
+      <div class="head"><h2>All samples</h2></div>
+      <div class="idx-grid" id="idx"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top">Pharma <i>Lab</i></a>
+    <p>Lab photos and the drug list come from the section file. Reference photos are from Wikimedia Commons and are shown under their own licences.</p>
+    <details><summary>Reference photo credits</summary><ul id="credits"></ul></details>
+  </div>
+</footer>
+
+<div class="room" id="room" hidden><div class="room-bar"><div class="room-bar-in" id="room-bar"></div><div class="qtrack"><i id="qtrack"></i></div></div><div class="room-body" id="room-body"></div></div>
+<div class="loupe" id="loupe" aria-hidden="true"></div>
+
+<script>
+const GROUPS = [
+  { id: "counter", name: "Counter irritant", color: "#1FB874" },
+  { id: "urinary", name: "Urinary tract antiseptic", color: "#7CC6FE" },
+  { id: "cardiac", name: "Cardiac tonic, secondary diuretic", color: "#2E86DE", dark: true },
+  { id: "expect", name: "Expectorant", color: "#7BE0A6" },
+  { id: "parasym", name: "Parasympathomimetic", color: "#0F7A55", dark: true },
+  { id: "spinal", name: "Spinal cord stimulant", color: "#F2FBF6" },
+  { id: "cestode", name: "Anti-cestodes", color: "#9DEBBE" },
+  { id: "astring", name: "Astringent", color: "#1C5FB8", dark: true },
+  { id: "demul", name: "Demulcent", color: "#B5E8F7" },
+  { id: "purg", name: "Purgative", color: "#1FB874" },
+  { id: "carmin", name: "Carminative", color: "#5AA9F0" },
+  { id: "stomach", name: "Stomachic", color: "#7BE0A6" }
+];
+const USE_CI = "Treatment of chronic arthritis, tendinitis";
+const CASES = [
+  { id: "pinus", g: "counter", name: "Pinus Fruits", ap: "Turpentine Oil", action: "Counter irritant", use: USE_CI,
+    k: { name: [["pinus", "pine"]], ap: [["turpentine"]], action: [["counter irritant", "counterirritant", "rubefacient"]], use: [["arthritis"], ["tendinitis", "tendonitis"]] } },
+  { id: "croton", g: "counter", name: "Croton Seeds", ap: "Croton Oil", action: "Counter irritant", use: USE_CI,
+    k: { name: [["croton"]], ap: [["croton oil", "croton"]], action: [["counter irritant", "counterirritant", "rubefacient"]], use: [["arthritis"], ["tendinitis", "tendonitis"]] } },
+  { id: "uva-ursi", g: "urinary", name: "Uva-Ursi Leaves", ap: "Arbutin Glycoside", action: "Urinary tract antiseptic", use: "Treatment of urinary tract infections",
+    k: { name: [["uva ursi", "uvaursi", "bearberry"]], ap: [["arbutin"]], action: [["urinary"], ["antiseptic"]], use: [["urinary", "uti"], ["infection", "uti"]] } },
+  { id: "squill", g: "cardiac", name: "Squill (Scilla)", ap: "Scillarin", action: "Cardiac tonic, secondary diuretic", use: "Treatment of CHF",
+    k: { name: [["squill", "scilla", "urginea"]], ap: [["scillarin"]], action: [["cardiac tonic", "cardiotonic", "cardiac"], ["diuretic"]], use: [["chf", "heart failure", "congestive"]] } },
+  { id: "strophanthus", g: "cardiac", name: "Strophanthus Seeds", ap: "Strophanthin", action: "Cardiac tonic, secondary diuretic", use: "Treatment of CHF",
+    k: { name: [["strophanthus"]], ap: [["strophanthin"]], action: [["cardiac tonic", "cardiotonic", "cardiac"], ["diuretic"]], use: [["chf", "heart failure", "congestive"]] } },
+  { id: "polygala", g: "expect", name: "Polygala Senega Root", ap: "Senegin", action: "Expectorant", use: "Treatment of bronchitis",
+    k: { name: [["polygala", "senega"]], ap: [["senegin"]], action: [["expectorant"]], use: [["bronchitis"]] } },
+  { id: "ipecac", g: "expect", name: "Ipecac Root", ap: "Emetine", action: "Expectorant", use: "Treatment of bronchitis",
+    k: { name: [["ipecac", "ipecacuanha"]], ap: [["emetine"]], action: [["expectorant"]], use: [["bronchitis"]] } },
+  { id: "eucalyptus", g: "expect", name: "Eucalyptus Leaves", ap: "Eucalyptus Oil", action: "Expectorant, respiratory tract antiseptic", use: "Treatment of bronchitis, cough, respiratory infection",
+    k: { name: [["eucalyptus"]], ap: [["eucalyptus oil", "eucalyptol", "cineole", "eucalyptus"]], action: [["expectorant"], ["antiseptic"]], use: [["bronchitis"], ["cough", "respiratory infection", "resp infection", "respiratory"]] } },
+  { id: "jaborandi", g: "parasym", name: "Jaborandi Leaves", ap: "Pilocarpine", action: "Parasympathomimetic", use: "Alternate with atropine to remove adhesion between iris and lens; treatment of glaucoma",
+    k: { name: [["jaborandi", "pilocarpus"]], ap: [["pilocarpine"]], action: [["parasympathomimetic", "cholinergic", "parasympathetic"]], use: [["glaucoma"], ["atropine", "adhesion", "iris"]] } },
+  { id: "calabar", g: "parasym", name: "Calabar Beans", ap: "Eserine, Physostigmine", action: "Anti-cholinesterase, parasympathomimetic", use: "Alternate with atropine to remove adhesion between iris and lens; treatment of glaucoma",
+    k: { name: [["calabar", "physostigma"]], ap: [["eserine", "physostigmine"]], action: [["anticholinesterase", "anti cholinesterase", "cholinesterase", "parasympathomimetic", "cholinergic"]], use: [["glaucoma"], ["atropine", "adhesion", "iris"]] } },
+  { id: "nux-vomica", g: "spinal", name: "Strychnos Nux Vomica Seeds", ap: "Strychnine", action: "Spinal cord stimulant, aphrodisiac", use: "Eradication of stray dogs; sexual impotency in dogs",
+    k: { name: [["nux vomica", "strychnos", "nux"]], ap: [["strychnine"]], action: [["spinal cord stimulant", "spinal"], ["aphrodisiac"]], use: [["stray dogs", "eradication", "stray"], ["impotency", "impotence", "sexual"]] } },
+  { id: "kamala", g: "cestode", name: "Kamala Powder", ap: "Resin", action: "Anticestodes", use: "Treatment of cestodes infestation",
+    k: { name: [["kamala"]], ap: [["resin", "rottlerin"]], action: [["anticestode", "anticestodes", "anti cestode", "taenicide", "cestocide", "cestode"]], use: [["cestode", "cestodes", "tapeworm"]] } },
+  { id: "krameria", g: "astring", name: "Krameria Root", ap: "Tannic Acid", action: "Astringent", use: "Treatment of diarrhea",
+    k: { name: [["krameria", "rhatany"]], ap: [["tannic", "tannin"]], action: [["astringent"]], use: [["diarrhea", "diarrhoea"]] } },
+  { id: "catechu", g: "astring", name: "Catechu", ap: "Tannic Acid", action: "Astringent", use: "Treatment of diarrhea", refNote: "Reference photo (pale catechu blocks)",
+    k: { name: [["catechu", "cutch"]], ap: [["tannic", "tannin"]], action: [["astringent"]], use: [["diarrhea", "diarrhoea"]] } },
+  { id: "acacia", g: "demul", name: "Gum Acacia", ap: "Arabic acid + sugars (galactose, arabinose)", action: "Demulcent", use: "Treatment of gastric ulcer, gastritis",
+    k: { name: [["acacia", "gum arabic", "arabic gum"]], ap: [["arabic acid", "arabin"], ["sugar", "sugars", "galactose", "arabinose"]], action: [["demulcent"]], use: [["ulcer"], ["gastritis"]] } },
+  { id: "senna", g: "purg", name: "Senna Leaves", ap: "Emodin, Chrysophanic Acid", action: "Purgative", use: "Treatment of constipation",
+    k: { name: [["senna"]], ap: [["emodin"], ["chrysophanic"]], action: [["purgative", "laxative", "cathartic"]], use: [["constipation"]] } },
+  { id: "rhubarb", g: "purg", name: "Rhubarb Rhizomes", ap: "Emodin, Chrysophanic Acid", action: "Purgative", use: "Treatment of constipation",
+    k: { name: [["rhubarb", "rheum"]], ap: [["emodin"], ["chrysophanic"]], action: [["purgative", "laxative", "cathartic"]], use: [["constipation"]] } },
+  { id: "castor", g: "purg", name: "Castor Seeds", ap: "Castor Oil", action: "Purgative", use: "Treatment of constipation",
+    k: { name: [["castor", "ricinus"]], ap: [["castor oil", "ricinoleic", "ricinolein", "castor"]], action: [["purgative", "laxative", "cathartic"]], use: [["constipation"]] } },
+  { id: "linseed", g: "purg", name: "Lin Seed", ap: "Lin Oil", action: "Purgative", use: "Treatment of constipation",
+    k: { name: [["linseed", "lin seed", "flax", "flaxseed", "lin"]], ap: [["lin oil", "linseed oil", "flaxseed oil", "flax oil"]], action: [["purgative", "laxative", "cathartic"]], use: [["constipation"]] } },
+  { id: "colocynth", g: "purg", name: "Colocynthus Colocynth", ap: "Colocynthin", action: "Purgative", use: "Treatment of constipation",
+    k: { name: [["colocynth", "colocynthus", "colocynthis", "handal", "hanzal"]], ap: [["colocynthin"]], action: [["purgative", "laxative", "cathartic"]], use: [["constipation"]] } },
+  { id: "jalap", g: "purg", name: "Jalap Tubercle", ap: "Jalapin", action: "Purgative", use: "Treatment of constipation", off: true, labNote: "From the course slides",
+    k: { name: [["jalap"]], ap: [["jalapin"]], action: [["purgative", "laxative", "cathartic"]], use: [["constipation"]] } },
+  { id: "cinnamon", g: "carmin", name: "Cinnamon Bark", ap: "Cinnamon Oil", action: "Carminative", use: "Treatment of flatulent colic",
+    k: { name: [["cinnamon"]], ap: [["cinnamon oil", "cinnamaldehyde", "cinnamic aldehyde"]], action: [["carminative"]], use: [["flatulent", "flatulence", "colic"]] } },
+  { id: "ginger", g: "carmin", name: "Ginger Rhizomes", ap: "Ginger Oil", action: "Carminative", use: "Treatment of flatulent colic",
+    k: { name: [["ginger", "zingiber"]], ap: [["ginger oil", "gingerol", "zingiberene"]], action: [["carminative"]], use: [["flatulent", "flatulence", "colic"]] } },
+  { id: "gentian", g: "stomach", name: "Gentian Root", ap: "Gentiamarine", action: "Stomachic", use: "Treatment of loss of appetite (appetizer)",
+    k: { name: [["gentian", "gentiana"]], ap: [["gentiamarine", "gentiamarin", "gentiopicrin"]], action: [["stomachic", "bitter"]], use: [["appetite", "appetizer", "appetiser"]] } },
+  { id: "cinchona", g: "stomach", name: "Cinchona Bark", ap: "Quinidine", action: "Stomachic", use: "Treatment of loss of appetite (appetizer)", off: true, noLab: true,
+    k: { name: [["cinchona"]], ap: [["quinidine"]], action: [["stomachic", "bitter"]], use: [["appetite", "appetizer", "appetiser"]] } },
+  { id: "quassia", g: "stomach", name: "Quassia Wood", ap: "Quassin", action: "Stomachic", use: "Treatment of loss of appetite (appetizer)",
+    k: { name: [["quassia"]], ap: [["quassin"]], action: [["stomachic", "bitter"]], use: [["appetite", "appetizer", "appetiser"]] } },
+  { id: "columba", g: "stomach", name: "Columba Root", ap: "Columbamine", action: "Stomachic", use: "Treatment of loss of appetite (appetizer)",
+    k: { name: [["columba", "calumba", "colombo"]], ap: [["columbamine"]], action: [["stomachic", "bitter"]], use: [["appetite", "appetizer", "appetiser"]] } }
+];
+const CREDITS = {"pinus":{"page":"https://commons.wikimedia.org/wiki/File:Pinus_pinaster_MHNT.2005.0.997.jpg","lic":"CC BY-SA 4.0","art":"Roger Culos","title":"Pinus pinaster MHNT.2005.0.997.jpg"},"croton":{"page":"https://commons.wikimedia.org/wiki/File:Croton_tiglium_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-197.jpg","lic":"Public domain","art":"Franz Eugen Köhler, Köhler's Medizinal-Pflanzen","title":"Croton tiglium - Köhler–s Medizinal-Pflanzen-197.jpg"},"uva-ursi":{"page":"https://commons.wikimedia.org/wiki/File:Uvae_ursi_folium_by_Danny_S._-_001.jpg","lic":"CC BY-SA 3.0","art":"Danny Steven S.","title":"Uvae ursi folium by Danny S. - 001.jpg"},"squill":{"page":"https://commons.wikimedia.org/wiki/File:Urginea_Maritima.jpg","lic":"CC BY 2.0","art":"Klearchos Kapoutsis","title":"Urginea Maritima.jpg"},"strophanthus":{"page":"https://commons.wikimedia.org/wiki/File:Strophanthi1.JPG","lic":"CC BY-SA 3.0","art":"Maša Sinreih in Valentina Vivod","title":"Strophanthi1.JPG"},"polygala":{"page":"https://commons.wikimedia.org/wiki/File:Plate_5-_Medicinal_roots_from_the_family_Polygalaceae_-_DPLA_-_45469585324c4db98c8acfbad9938f8c.jpg","lic":"Public domain","art":"Wills, George S. V","title":"Plate 5- Medicinal roots from the family Polygalaceae - DPLA - 45469585324c4db98c8acfbad9938f8c.jpg"},"ipecac":{"page":"https://commons.wikimedia.org/wiki/File:Ipeca_Droguier_interieur_ISPB_Lyon_UCBL.jpg","lic":"CC BY-SA 4.0","art":"Delphine Montagne","title":"Ipeca Droguier interieur ISPB Lyon UCBL.jpg"},"eucalyptus":{"page":"https://commons.wikimedia.org/wiki/File:Eucalypti1.JPG","lic":"CC BY-SA 3.0","art":"Maša Sinreih in Valentina Vivod","title":"Eucalypti1.JPG"},"jaborandi":{"page":"https://commons.wikimedia.org/wiki/File:Jaborandi.JPG","lic":"Public domain","art":"Fabiano Gumier Costa","title":"Jaborandi.JPG"},"calabar":{"page":"https://commons.wikimedia.org/wiki/File:Physostigma_venenosum_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-237.jpg","lic":"Public domain","art":"Franz Eugen Köhler, Köhler's Medizinal-Pflanzen","title":"Physostigma venenosum - Köhler–s Medizinal-Pflanzen-237.jpg"},"nux-vomica":{"page":"https://commons.wikimedia.org/wiki/File:Strychnos_nux-vomica_001.JPG","lic":"CC BY-SA 3.0","art":"H. Zell","title":"Strychnos nux-vomica 001.JPG"},"kamala":{"page":"https://commons.wikimedia.org/wiki/File:Mallotus_philippensis_fruits_at_Nedumpoil_(3).jpg","lic":"CC BY-SA 4.0","art":"Vinayaraj","title":"Mallotus philippensis fruits at Nedumpoil (3).jpg"},"krameria":{"page":"https://commons.wikimedia.org/wiki/File:Ratanhiae1.JPG","lic":"CC BY-SA 3.0","art":"Maša Sinreih in Valentina Vivod","title":"Ratanhiae1.JPG"},"catechu":{"page":"https://commons.wikimedia.org/wiki/File:Gambir_di_Banda_Aceh.jpg","lic":"CC BY-SA 4.0","art":"Si Gam","title":"Gambir di Banda Aceh.jpg"},"acacia":{"page":"https://commons.wikimedia.org/wiki/File:Gum_Arabic.jpg","lic":"CC BY 3.0","art":"Tarig A. Eltom","title":"Gum Arabic.jpg"},"senna":{"page":"https://commons.wikimedia.org/wiki/File:Sennae_folium_by_Danny_S._-_001.jpg","lic":"CC BY-SA 3.0","art":"Danny Steven S.","title":"Sennae folium by Danny S. - 001.jpg"},"rhubarb":{"page":"https://commons.wikimedia.org/wiki/File:Rhei_radix_157232.jpg","lic":"CC BY-SA 3.0 de","art":"Rillke","title":"Rhei radix 157232.jpg"},"castor":{"page":"https://commons.wikimedia.org/wiki/File:Ricinus_communis_008.JPG","lic":"CC BY-SA 3.0","art":"H. Zell","title":"Ricinus communis 008.JPG"},"linseed":{"page":"https://commons.wikimedia.org/wiki/File:Brown_Flax_Seeds.jpg","lic":"CC BY-SA 3.0","art":"Sanjay Acharya","title":"Brown Flax Seeds.jpg"},"colocynth":{"page":"https://commons.wikimedia.org/wiki/File:Citrullus_colocynthis_fruit.jpg","lic":"CC BY-SA 3.0","art":"Mark Marathon","title":"Citrullus colocynthis fruit.jpg"},"jalap":{"page":"https://commons.wikimedia.org/wiki/File:Ipomoea_purga_Berg_1891_33b.jpg","lic":"Public domain","art":"Berg, O.C.","title":"Ipomoea purga Berg 1891 33b.jpg"},"cinnamon":{"page":"https://commons.wikimedia.org/wiki/File:Cinnamomum_verum_spices.jpg","lic":"CC BY-SA 3.0","art":"Simon A. Eugster","title":"Cinnamomum verum spices.jpg"},"ginger":{"page":"https://commons.wikimedia.org/wiki/File:Ginger_rhizomes.jpg","lic":"CC0","art":"Judethedeus","title":"Ginger rhizomes.jpg"},"gentian":{"page":"https://commons.wikimedia.org/wiki/File:Gentianae1.JPG","lic":"CC BY-SA 3.0","art":"Maša Sinreih in Valentina Vivod","title":"Gentianae1.JPG"},"cinchona":{"page":"https://commons.wikimedia.org/wiki/File:Cortex_Cinchonae_by_Danny_S._-_001.JPG","lic":"CC BY-SA 3.0","art":"Danny Steven S.","title":"Cortex Cinchonae by Danny S. - 001.JPG"},"quassia":{"page":"https://commons.wikimedia.org/wiki/File:Quassia_amara_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-117.jpg","lic":"Public domain","art":"Franz Eugen Köhler, Köhler's Medizinal-Pflanzen","title":"Quassia amara - Köhler–s Medizinal-Pflanzen-117.jpg"},"columba":{"page":"https://commons.wikimedia.org/wiki/File:Jateorrhiza_Calumba_Bentley_Trimen.jpg","lic":"Public domain","art":"David Blair","title":"Jateorrhiza Calumba Bentley Trimen.jpg"},"cinchona-b":{"page":"https://commons.wikimedia.org/wiki/File:Strip_of_rolled_cinchona_bark%2C_India%2C_1860-1910_Wellcome_L0058853.jpg","lic":"CC BY 4.0","art":"Wellcome Collection","title":"Strip of rolled cinchona bark, India, 1860-1910 Wellcome L0058853.jpg"}};
+const FIELDS = [["name", "Name"], ["ap", "Active principle"], ["action", "Action"], ["use", "Therapeutic use"]];
+CASES.forEach((c, i) => { c.no = i + 1; c.grp = GROUPS.find(g => g.id === c.g); });
+const byId = Object.fromEntries(CASES.map(c => [c.id, c]));
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+/* Pictures: lab jar on the left, reference photo on the right */
+function pics(c, opts = {}) {
+  const lab = c.noLab
+    ? `<figure class="ref"><figcaption>Reference photo 2</figcaption><img src="img/ref-${c.id}-b.jpg" alt="Second reference photo for sample ${c.no}" loading="lazy" decoding="async"></figure>`
+    : `<figure><figcaption>${esc(c.labNote || "From the lab")}</figcaption><img src="img/lab-${c.id}.jpg" alt="Lab sample ${c.no}, label hidden" loading="lazy" decoding="async"></figure>`;
+  const ref = opts.labOnly && !c.noLab ? "" : `<figure class="ref"><figcaption>${esc(c.refNote || "Reference photo")}</figcaption><img src="img/ref-${c.id}.jpg" alt="Reference photo for sample ${c.no}" loading="lazy" decoding="async"></figure>`;
+  return `<div class="pairpics"${ref ? "" : ' style="grid-template-columns:1fr"'}>${lab}${ref}</div>`;
+}
+function facts(c) {
+  return `<dl class="facts4">${FIELDS.slice(1).map(([k, l]) => `<div><dt>${l}</dt><dd>${esc(c[k])}</dd></div>`).join("")}</dl>`;
+}
+function creditLine(c) {
+  const one = r => `<a href="${esc(r.page)}" target="_blank" rel="noopener">${esc(r.art || "Wikimedia Commons")}</a>${r.lic ? ", " + esc(r.lic) : ""}`;
+  const r = CREDITS[c.id], r2 = CREDITS[c.id + "-b"]; if (!r) return "";
+  return `<p class="credit">Reference photo${r2 ? "s" : ""}: ${one(r)}${r2 ? "; " + one(r2) : ""}</p>`;
+}
+
+/* Static parts built from the data */
+function buildPage() {
+  const counts = g => CASES.filter(c => c.g === g.id).length;
+  $("#groups").innerHTML = GROUPS.map(g => `<a class="g-card${g.dark ? " dark" : ""}" href="#g-${g.id}" style="background:${g.color}"><b>${g.name}</b><span>${counts(g)} sample${counts(g) > 1 ? "s" : ""}</span><i><u id="h-p-${g.id}"></u></i></a>`).join("");
+  $("#t-groups").innerHTML = GROUPS.map(g => `<label class="chip"><input class="sr" type="checkbox" name="t-grp" value="${g.id}" checked><span>${g.name}</span></label>`).join("");
+  $("#chapters").outerHTML = GROUPS.map((g, gi) => {
+    const list = CASES.filter(c => c.g === g.id);
+    return `<section class="chapter" id="g-${g.id}" style="--chip:${g.color}"><div class="wrap">
+      <header class="ch-head"><div><p class="ch-no">Group ${String(gi + 1).padStart(2, "0")}</p><h2>${g.name}</h2></div><p class="ch-meta">${list.length} sample${list.length > 1 ? "s" : ""} · samples ${list[0].no}${list.length > 1 ? "–" + list[list.length - 1].no : ""}</p></header>
+      <div class="cases">${list.map(c => `<article class="case" id="s-${c.id}">
+        ${pics(c)}
+        <div class="case-top"><p class="case-no">Sample ${c.no}</p>${c.off ? `<span class="note">Not in the lab yet</span>` : ""}</div>
+        <input class="sr toggle" type="checkbox" id="t-${c.id}"><label class="reveal" for="t-${c.id}"><span class="show-t">Show the answer</span><span class="hide-t">Hide the answer</span></label>
+        <div class="ans"><div class="ans-in"><h3>${esc(c.name)}</h3>${facts(c)}${creditLine(c)}</div></div>
+      </article>`).join("")}</div></div></section>`;
+  }).join("");
+  $("#tbl").innerHTML = GROUPS.map(g => {
+    const list = CASES.filter(c => c.g === g.id);
+    return `<tr class="grp" style="--chip:${g.color}"><td colspan="4"><span></span>${g.name}<small>(${list.length})</small></td></tr>` +
+      list.map(c => `<tr><td><a href="#s-${c.id}">${esc(c.name)}</a>${c.off ? `<span class="off">not in the lab</span>` : ""}</td><td>${esc(c.ap)}</td><td>${esc(c.action)}</td><td>${esc(c.use)}</td></tr>`).join("");
+  }).join("");
+  const cols = [["counter", "urinary", "cardiac", "expect"], ["parasym", "spinal", "cestode", "astring", "demul"], ["purg", "carmin"], ["stomach"]];
+  $("#idx").innerHTML = cols.map(col => `<div>${col.map(id => { const g = GROUPS.find(x => x.id === id); return `<div class="idx" style="--chip:${g.color};margin-bottom:24px"><h3>${g.name}</h3><ul>${CASES.filter(c => c.g === id).map(c => `<li><a href="#s-${c.id}">${c.no}. ${esc(c.name)}</a></li>`).join("")}</ul></div>`; }).join("")}</div>`).join("");
+  $("#credits").innerHTML = CASES.flatMap(c => [[c.name, CREDITS[c.id]], [c.name + " (2)", CREDITS[c.id + "-b"]]]).filter(x => x[1]).map(([n, r]) => `<li>${esc(n)}: <a href="${esc(r.page)}" target="_blank" rel="noopener">${esc(r.art || r.title)}</a>${r.lic ? " (" + esc(r.lic) + ")" : ""}</li>`).join("");
+}
+
+/* Marking: forgives small spelling slips, but each key idea has to be there */
+function norm(s) { return String(s || "").toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, " ").trim(); }
+function lev(a, b) {
+  if (a === b) return 0; const m = a.length, n = b.length; if (!m || !n) return m || n;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) { const cur = [i]; for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; }
+  return prev[n];
+}
+function close(w, t) { if (t.length <= 3) return w === t; const tol = t.length >= 9 ? 2 : t.length >= 5 ? 1 : 0; return w === t || (Math.abs(w.length - t.length) <= tol && lev(w, t) <= tol); }
+function hasPhrase(ans, phrase) {
+  const words = ans.split(" ").filter(Boolean), p = norm(phrase).split(" ");
+  const joined = ans.replace(/ /g, ""), pj = p.join("");
+  if (pj.length >= 6 && joined.includes(pj)) return true;
+  // the phrase written as one word, e.g. "counterirritant"
+  if (p.length > 1 && words.some(w => close(w, pj))) return true;
+  return p.every(t => words.some(w => close(w, t) || (t.length >= 6 && w.length >= 6 && (w.startsWith(t.slice(0, 6)) && lev(w, t) <= 3))));
+}
+function scoreField(answer, groups) {
+  const a = norm(answer); if (!a) return 0;
+  const hit = groups.filter(g => g.some(alt => hasPhrase(a, alt))).length;
+  return hit / groups.length;
+}
+function markCase(c, ans) {
+  const parts = {}; let total = 0;
+  FIELDS.forEach(([k]) => { const s = scoreField(ans[k], c.k[k]); parts[k] = s; total += s; });
+  const verdict = total >= 3.5 ? "c" : total >= 2 ? "p" : "w";
+  return { parts, total, verdict };
+}
+
+/* Progress, kept in this browser */
+const KEY = "pharma-lab-v1";
+let S = { cases: {}, history: [], session: null };
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function rec(id) { return S.cases[id] || (S.cases[id] = { seen: 0, streak: 0, last: null, wrong: 0 }); }
+function record(id, v) { const r = rec(id); r.seen++; r.last = v; if (v === "c") r.streak++; else { r.streak = 0; r.wrong++; } save(); }
+function mastery(id) { const r = S.cases[id]; if (!r || !r.seen) return 0; return Math.min(r.streak, 3) / 3; }
+function isWeak(id) { const r = S.cases[id]; return r && r.seen && r.last !== "c"; }
+
+function renderDash() {
+  const seen = CASES.filter(c => S.cases[c.id] && S.cases[c.id].seen).length;
+  const secure = CASES.filter(c => S.cases[c.id] && S.cases[c.id].streak >= 2).length;
+  const weak = CASES.filter(c => isWeak(c.id));
+  const overall = Math.round(CASES.reduce((s, c) => s + mastery(c.id), 0) / CASES.length * 100);
+  $("#t-ready").textContent = overall + "%"; $("#t-seen").textContent = seen; $("#t-secure").textContent = secure; $("#t-weak").textContent = weak.length;
+  $("#t-bars").innerHTML = GROUPS.map(g => {
+    const list = CASES.filter(c => c.g === g.id); const p = Math.round(list.reduce((s, c) => s + mastery(c.id), 0) / list.length * 100);
+    const u = document.getElementById("h-p-" + g.id); if (u) u.style.width = p + "%";
+    return `<div class="bar-row"><span>${g.name}</span><span class="bar-track"><i style="width:${p}%"></i></span><b>${p}%</b></div>`;
+  }).join("");
+  $("#t-history").innerHTML = S.history.length ? S.history.slice(-6).reverse().map(h => `<li><b>${h.pct}%</b><span>${h.n} samples${h.timed ? ", timed" : ""}</span><time>${new Date(h.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</time></li>`).join("") : `<li class="empty">Your mock paper scores will appear here.</li>`;
+  $("#t-weaklist").innerHTML = weak.length ? weak.map(c => `<li><a href="#s-${c.id}">${c.no}. ${esc(c.name)}</a><span style="color:var(--muted)">${S.cases[c.id].last === "p" ? "Partly" : "Wrong"}</span></li>`).join("") : `<li class="empty">Samples marked Wrong or Partly will appear here.</li>`;
+  $("#t-drillweak").hidden = !weak.length;
+  $("#t-status").textContent = !seen ? "Nothing practised yet. Start with a quick drill to see where you stand." :
+    overall >= 85 ? "Nearly there. Run a full timed paper to check it holds under pressure." :
+    weak.length ? `Focus on the ${weak.length} weak sample${weak.length > 1 ? "s" : ""} first, then widen out.` : "Good so far. Keep going until every sample has three correct answers in a row.";
+  const sess = S.session;
+  $("#t-resume").hidden = !sess;
+  if (sess) $("#t-resume-text").textContent = `You have an unfinished ${sess.kind === "mock" ? "mock paper" : "drill"}: sample ${sess.i + 1} of ${sess.queue.length}.`;
+}
+
+/* Paper settings */
+function getRadio(name) { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : null; }
+function updateTotal() {
+  const sel = [...document.querySelectorAll('input[name="t-grp"]:checked')].map(i => i.value);
+  const avail = CASES.filter(c => sel.includes(c.g)).length;
+  const nv = getRadio("t-n"); const n = nv === "all" ? avail : Math.min(+nv, avail);
+  const timed = $("#t-timed").checked; $("#t-time-opt").hidden = !timed;
+  $("#t-total").textContent = `${n} sample${n === 1 ? "" : "s"}, ${timed ? getRadio("t-min") + " min each" : "no timer"}`;
+  $("#t-start").disabled = !n;
+}
+document.addEventListener("change", e => { if (e.target.closest(".mode")) updateTotal(); });
+
+/* The exam room */
+let T = null, timer = null;
+function startMock() {
+  const sel = [...document.querySelectorAll('input[name="t-grp"]:checked')].map(i => i.value);
+  let pool = shuffle(CASES.filter(c => sel.includes(c.g)));
+  if ($("#t-weakfirst").checked) pool.sort((a, b) => (isWeak(b.id) ? 1 : 0) - (isWeak(a.id) ? 1 : 0));
+  const nv = getRadio("t-n"); const n = nv === "all" ? pool.length : Math.min(+nv, pool.length);
+  begin({ kind: "mock", queue: pool.slice(0, n).map(c => c.id), i: 0, results: [], timed: $("#t-timed").checked, per: +getRadio("t-min") * 60, labOnly: $("#t-labonly").checked, requeued: [] });
+}
+function startDrill(only) {
+  let pool;
+  if (only) pool = shuffle(CASES.filter(c => isWeak(c.id)));
+  else {
+    const f = getRadio("t-focus");
+    pool = shuffle(CASES);
+    if (f === "new") pool = pool.filter(c => !(S.cases[c.id] && S.cases[c.id].seen));
+    if (f === "smart") pool.sort((a, b) => mastery(a.id) - mastery(b.id));
+    if (!pool.length) pool = shuffle(CASES);
+    const sz = getRadio("t-dsize"); if (sz !== "all") pool = pool.slice(0, +sz);
+  }
+  begin({ kind: "drill", queue: pool.map(c => c.id), i: 0, results: [], timed: false, labOnly: false, requeued: [] });
+}
+function begin(sess) { S.session = sess; save(); T = sess; openRoom(); showQ(); }
+function openRoom() { $("#room").hidden = false; document.documentElement.classList.add("in-room"); $("#room").scrollTop = 0; }
+function closeRoom() { stopClock(); $("#room").hidden = true; document.documentElement.classList.remove("in-room"); renderDash(); }
+function roomBar(extra = "") {
+  const title = T.kind === "mock" ? "Mock paper" : "Quick drill";
+  $("#room-bar").innerHTML = `<span class="room-title">${title}</span><span class="count">Sample ${Math.min(T.i + 1, T.queue.length)} of ${T.queue.length}</span><span class="spacer"></span>${extra}<button type="button" class="btn-quiet" id="r-quit">Save and leave</button>`;
+  $("#qtrack").style.width = (T.i / T.queue.length * 100) + "%";
+  $("#r-quit").onclick = () => { save(); closeRoom(); };
+}
+function stopClock() { if (timer) { clearInterval(timer); timer = null; } }
+function showQ() {
+  stopClock();
+  if (T.i >= T.queue.length) return finish();
+  const c = byId[T.queue[T.i]];
+  roomBar(T.timed ? `<span class="clock" id="r-clock"></span>` : "");
+  $("#room-body").innerHTML = `<div class="q-card">
+    <div class="q-side">${pics(c, { labOnly: T.labOnly })}</div>
+    <form class="q-side" id="r-form" autocomplete="off">
+      <p class="q-lead">What is this sample?</p>
+      <div class="fields">${FIELDS.map(([k, l]) => `<div class="field"><label for="f-${k}">${l}</label><input id="f-${k}" name="${k}" spellcheck="false"></div>`).join("")}</div>
+      <div class="row"><button class="btn-main" type="submit">Submit</button><button class="btn-quiet" type="button" id="r-skip">I don't know</button></div>
+    </form></div>`;
+  $("#room").scrollTop = 0;
+  const first = $("#f-name"); if (first && matchMedia("(hover: hover)").matches) first.focus();
+  $("#r-form").onsubmit = e => { e.preventDefault(); submitQ(); };
+  $("#r-skip").onclick = () => submitQ(true);
+  if (T.timed) {
+    let left = T.left != null ? T.left : T.per; const el = $("#r-clock");
+    const draw = () => { const m = Math.floor(left / 60), s = Math.floor(left % 60); el.textContent = m + ":" + String(s).padStart(2, "0"); el.classList.toggle("urgent", left <= 15); };
+    draw();
+    timer = setInterval(() => { left--; T.left = left; if (left <= 0) { stopClock(); submitQ(); } else draw(); }, 1000);
+  }
+}
+function submitQ(blank) {
+  stopClock(); T.left = null;
+  const c = byId[T.queue[T.i]];
+  const ans = {}; FIELDS.forEach(([k]) => { const el = document.getElementById("f-" + k); ans[k] = blank ? "" : (el ? el.value.trim() : ""); });
+  const m = markCase(c, ans);
+  const res = { id: c.id, ans, auto: m.verdict, verdict: m.verdict, total: m.total };
+  T.results.push(res); record(c.id, m.verdict);
+  if (T.kind === "drill" && m.verdict !== "c" && !T.requeued.includes(c.id)) { T.requeued.push(c.id); T.queue.push(c.id); }
+  save(); showMarked(c, res, m);
+}
+const VNAME = { c: "Correct", p: "Partly right", w: "Wrong" };
+function showMarked(c, res, m) {
+  roomBar();
+  const tag = s => s >= .99 ? `<span class="verdict ok">right</span>` : s > 0 ? `<span class="verdict part">part</span>` : `<span class="verdict no">missed</span>`;
+  $("#room-body").innerHTML = `<div class="q-card">
+    <div class="q-side">${pics(c)}${creditLine(c)}</div>
+    <div class="q-side">
+      <p class="mark-head s-${res.verdict}" id="r-head"><b>${VNAME[res.verdict]}</b><span>${Math.round(m.total * 10) / 10} of 4 parts</span></p>
+      <dl class="checked">${FIELDS.map(([k, l]) => `<div><dt>${l} ${tag(m.parts[k])}</dt><dd class="yours${res.ans[k] ? "" : " blank"}">${res.ans[k] ? esc(res.ans[k]) : "No answer"}</dd><dd class="model">${esc(c[k])}</dd></div>`).join("")}</dl>
+      <button type="button" class="change-mark" id="r-change">Change the mark</button>
+      <div class="marks" id="r-marks" hidden><button type="button" class="m-c" data-v="c">Correct</button><button type="button" class="m-p" data-v="p">Partly</button><button type="button" class="m-w" data-v="w">Wrong</button></div>
+      <div class="row"><button type="button" class="btn-main" id="r-next">${T.i + 1 >= T.queue.length ? "See my result" : "Next sample"}</button></div>
+    </div></div>`;
+  $("#room").scrollTop = 0;
+  $("#r-change").onclick = () => { $("#r-marks").hidden = false; $("#r-change").hidden = true; setPressed(res.verdict); };
+  const setPressed = v => document.querySelectorAll("#r-marks button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === v));
+  document.querySelectorAll("#r-marks button").forEach(b => b.onclick = () => {
+    const v = b.dataset.v; const r = rec(c.id);
+    // undo the automatic mark, then apply the chosen one
+    if (res.verdict === "c") r.streak = Math.max(0, r.streak - 1); else r.wrong = Math.max(0, r.wrong - 1);
+    r.seen--; record(c.id, v); res.verdict = v; setPressed(v);
+    const h = $("#r-head"); h.className = "mark-head s-" + v; h.querySelector("b").textContent = VNAME[v];
+  });
+  $("#r-next").onclick = () => { T.i++; save(); showQ(); };
+  $("#r-next").focus({ preventScroll: true });
+}
+function finish() {
+  stopClock();
+  const pts = { c: 1, p: .5, w: 0 };
+  const firsts = {}; T.results.forEach(r => { if (!(r.id in firsts)) firsts[r.id] = r; });
+  const list = Object.values(firsts);
+  const pct = list.length ? Math.round(list.reduce((s, r) => s + pts[r.verdict], 0) / list.length * 100) : 0;
+  if (T.kind === "mock") S.history.push({ at: Date.now(), pct, n: list.length, timed: T.timed });
+  const kind = T.kind; S.session = null; save();
+  $("#room-bar").innerHTML = `<span class="room-title">${kind === "mock" ? "Mock paper" : "Quick drill"}: result</span><span class="spacer"></span><button type="button" class="btn-quiet" id="r-quit">Back to the page</button>`;
+  $("#qtrack").style.width = "100%";
+  $("#r-quit").onclick = closeRoom;
+  const missed = list.filter(r => r.verdict !== "c");
+  const cnt = v => list.filter(r => r.verdict === v).length;
+  $("#room-body").innerHTML = `<div class="result">
+    <p class="big">${pct}%</p>
+    <p class="lede">${cnt("c")} correct, ${cnt("p")} partly right and ${cnt("w")} wrong out of ${list.length}. Partly right counts as half.</p>
+    ${missed.length ? `<div><h3 style="font-size:1.75rem;margin-bottom:10px">Go over these</h3><ul class="missed">${missed.map(r => { const c = byId[r.id]; return `<li><b>${c.no}. ${esc(c.name)}</b><span>${esc(c.ap)} · ${esc(c.action)}</span></li>`; }).join("")}</ul></div>` : ""}
+    <div class="row"><button type="button" class="btn-main" id="r-again">${kind === "mock" ? "Another paper" : "Another drill"}</button>${missed.length ? `<button type="button" class="btn-quiet" id="r-weak">Drill the ones I missed</button>` : ""}</div>
+  </div>`;
+  $("#room").scrollTop = 0;
+  $("#r-again").onclick = () => kind === "mock" ? startMock() : startDrill();
+  const w = $("#r-weak"); if (w) w.onclick = () => begin({ kind: "drill", queue: shuffle(missed.map(r => r.id)), i: 0, results: [], timed: false, labOnly: false, requeued: [] });
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#room").hidden) { save(); closeRoom(); } });
+
+/* Try one */
+let tryCase = null;
+function tryOne() {
+  let next; do { next = CASES[Math.floor(Math.random() * CASES.length)]; } while (tryCase && next.id === tryCase.id);
+  tryCase = next; $("#h-wrap").hidden = false; $("#h-pics").outerHTML = pics(tryCase).replace('class="pairpics"', 'class="pairpics" id="h-pics"');
+  $("#h-ans").hidden = true; $("#h-show").hidden = false;
+}
+$("#h-try").onclick = () => { $("#h-try").hidden = true; tryOne(); };
+$("#h-next").onclick = tryOne;
+$("#h-show").onclick = () => { const c = tryCase; $("#h-ans").innerHTML = `<p class="name">${esc(c.name)}</p>${facts(c)}`; $("#h-ans").hidden = false; $("#h-show").hidden = true; };
+
+/* Wiring */
+buildPage(); updateTotal(); renderDash();
+$("#t-start").onclick = startMock;
+$("#h-start").onclick = startMock;
+$("#t-drill").onclick = () => startDrill();
+$("#h-drill").onclick = () => startDrill();
+$("#t-drillweak").onclick = () => startDrill(true);
+$("#t-resume-btn").onclick = () => { T = S.session; T.left = null; openRoom(); showQ(); };
+$("#t-discard").onclick = () => { S.session = null; save(); renderDash(); };
+$("#t-reset").onclick = () => { $("#t-reset-confirm").hidden = false; $("#t-reset").hidden = true; };
+$("#t-reset-no").onclick = () => { $("#t-reset-confirm").hidden = true; $("#t-reset").hidden = false; };
+$("#t-reset-yes").onclick = () => { S = { cases: {}, history: [], session: null }; save(); renderDash(); $("#t-reset-no").onclick(); };
+
+/* Reading progress */
+const prog = $("#progress");
+addEventListener("scroll", () => { const h = document.documentElement; prog.style.transform = `scaleX(${h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)})`; }, { passive: true });
+
+/* Loupe on mouse, tap to zoom on touch */
+const loupe = $("#loupe"); const fine = matchMedia("(hover: hover) and (pointer: fine)");
+document.addEventListener("mousemove", e => {
+  const img = e.target.closest && e.target.closest(".pairpics img");
+  if (!fine.matches || !img || img.classList.contains("zoomed")) { loupe.classList.remove("on"); return; }
+  const r = img.getBoundingClientRect(); const z = 2.6;
+  const nw = img.naturalWidth || r.width, nh = img.naturalHeight || r.height;
+  const sc = Math.min(r.width / nw, r.height / nh); const dw = nw * sc, dh = nh * sc; const ox = (r.width - dw) / 2, oy = (r.height - dh) / 2;
+  const x = e.clientX - r.left - ox, y = e.clientY - r.top - oy;
+  loupe.style.backgroundImage = `url("${img.currentSrc || img.src}")`;
+  loupe.style.backgroundSize = `${dw * z}px ${dh * z}px`;
+  loupe.style.backgroundPosition = `${105 - x * z}px ${105 - y * z}px`;
+  loupe.style.transform = `translate(${e.clientX - 105}px, ${e.clientY - 105}px)`;
+  loupe.classList.add("on");
+});
+document.addEventListener("click", e => {
+  const img = e.target.closest && e.target.closest(".pairpics img"); if (!img || fine.matches) return;
+  const r = img.getBoundingClientRect(); img.style.transformOrigin = `${(e.clientX - r.left) / r.width * 100}% ${(e.clientY - r.top) / r.height * 100}%`;
+  img.classList.toggle("zoomed");
+});
+</script>
+</body>
+</html>
