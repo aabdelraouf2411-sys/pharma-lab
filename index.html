@@ -326,6 +326,120 @@ html.in-room, html.in-room body { overflow: hidden; }
 .missed li { padding-block: 8px; border-top: 1px solid var(--edge); display: flex; flex-wrap: wrap; gap: 4px 12px; }
 .missed li span { color: var(--muted); }
 
+/* Phones: everything fits the screen width, nothing scrolls sideways, photos and type scale down */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (max-width: 699px) {
+  body { font-size: 1.0625rem; }
+  .wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .band { padding-block: 56px; }
+  h2 { font-size: clamp(1.75rem, 9vw, 2.5rem); overflow-wrap: anywhere; hyphens: auto; }
+  .ch-head > div { min-width: 0; }
+  .head { margin-bottom: 24px; }
+  .lede { font-size: 1rem; }
+
+  /* Menu wraps instead of running off the edge */
+  .bar .wrap { padding-block: 8px; gap: 4px; }
+  .brand { font-size: 1.15rem; }
+  .bar nav { flex-wrap: wrap; overflow: visible; gap: 2px 14px; }
+  .bar nav a { font-size: .8125rem; padding-block: 2px; }
+  html { scroll-padding-top: 96px; }
+  section, .case { scroll-margin-top: 100px; }
+
+  /* Cover */
+  .cover { padding-top: 28px; }
+  .cover > .wrap { gap: 28px; }
+  .cover-copy { gap: 16px; }
+  .cover h1 { font-size: clamp(2.25rem, 10.5vw, 2.75rem); }
+  .cover .sub { font-size: 1.0625rem; }
+  .starts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .starts .btn-main, .starts .btn-quiet { font-size: .9375rem; padding: 13px 10px; text-align: center; }
+  .so-far { font-size: .9375rem; }
+  .sheet-wrap { margin-inline: -16px; padding: 22px 18px 18px; }
+  .sheet { padding: 16px 14px 44px 40px; }
+  .sheet::before { left: 28px; }
+  .sheet .mark { width: 44px; height: 44px; right: 12px; top: 64px; }
+  .sheet .score { font-size: 1.5rem; }
+  .g-card { padding: 12px 12px 10px; }
+  .g-card b { font-size: 1rem; }
+  .g-card span { font-size: .8125rem; }
+  .g-card i { margin-top: 6px; }
+
+  /* Practice */
+  .dash { gap: 16px; }
+  .ring b { font-size: 3.5rem; }
+  .tally { font-size: 1rem; }
+  .bar-row { grid-template-columns: minmax(0, 1fr) 72px 36px; gap: 8px; font-size: .8125rem; line-height: 1.25; }
+  .modes, .records { gap: 14px; margin-top: 16px; }
+  .mode, .records > div, .try-one { padding: 18px 16px; gap: 14px; }
+  .mode h3 { font-size: 1.75rem; }
+  .mode > p { font-size: .9375rem; }
+  .chip span { padding: 6px 10px; font-size: .875rem; }
+  .go .btn-main, .go .btn-quiet { width: 100%; text-align: center; }
+  .records h4 { font-size: 1.25rem; }
+  .try-one .q-lead { font-size: 1.375rem; }
+  .t-foot { font-size: .875rem; }
+
+  /* How to answer */
+  .steps b { font-size: 1.25rem; }
+  .steps li::before { font-size: 1.75rem; }
+  .rules { font-size: .9375rem; margin-top: 20px; }
+
+  /* Samples */
+  .controls .wrap { gap: 4px 20px; padding-block: 8px; }
+  .group label, .g-name, .hint { font-size: .8125rem; }
+  .chapter { padding-top: 44px; }
+  .chapter:last-of-type { padding-bottom: 56px; }
+  .ch-head { margin-bottom: 16px; gap: 4px; }
+  .ch-meta { font-size: .875rem; }
+  .cases { gap: 34px; }
+  .pairpics img, .pairpics .none { height: 168px; }
+  .pairpics figcaption { font-size: .6875rem; padding: 3px 6px; }
+  .case-no { font-size: 1.125rem; }
+  .ans h3 { font-size: 1.5rem; }
+  .facts4 dd { font-size: 1rem; }
+
+  /* Summary table becomes one card per drug */
+  .tbl-wrap { overflow: visible; }
+  .drug-table { min-width: 0; }
+  .drug-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .drug-table, .drug-table tbody, .drug-table tr, .drug-table td { display: block; width: 100%; }
+  .drug-table tbody tr:not(.grp) { padding: 10px 0; border-top: 1px solid var(--line); }
+  .drug-table td { border: 0; padding: 1px 0; font-size: .9375rem; }
+  .drug-table td:first-child { font-size: 1.0625rem; padding-bottom: 4px; }
+  .drug-table td:not(:first-child)::before { content: attr(data-h) ": "; font-weight: 600; color: var(--leaf); }
+  .drug-table .grp td { padding: 22px 0 6px; font-size: 1.25rem; }
+
+  /* Easily confused, index, footer */
+  .pair { padding: 14px 0; }
+  .pair h3 { font-size: 1.375rem; }
+  .pair p { font-size: .9375rem; }
+  .idx-grid { gap: 0; }
+  .idx h3 { font-size: 1.2rem; }
+  footer { padding-block: 32px; }
+
+  /* Exam room */
+  .room-bar-in { padding: 8px 14px; min-height: 0; gap: 6px 10px; }
+  .room-title { font-size: 1.05rem; }
+  .clock { font-size: 1.375rem; }
+  .room-body { padding: 16px 14px 48px; gap: 20px; }
+  .q-card { gap: 16px; }
+  .q-card .pairpics img, .q-card .pairpics .none { height: 190px; }
+  .q-lead { font-size: 1.5rem; }
+  .fields { gap: 10px; }
+  .field input { font-size: 16px; padding: 10px; }
+  .q-card .row .btn-main, .q-card .row .btn-quiet { flex: 1 1 0; text-align: center; padding-inline: 8px; }
+  .mark-head b { font-size: 1.25rem; }
+  .checked .yours, .checked .model { font-size: .9375rem; }
+  .marks button { padding: 11px 4px; font-size: .9375rem; }
+  .result .big { font-size: 4.5rem; }
+  .result .lede { font-size: 1rem; }
+}
+@media (max-width: 360px) {
+  .groups { grid-template-columns: minmax(0, 1fr); }
+  .pairpics img, .pairpics .none { height: 140px; }
+  .starts { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* Loupe */
 .loupe { position: fixed; z-index: 50; left: 0; top: 0; width: 210px; height: 210px; border-radius: 50%; pointer-events: none; background-color: var(--deep); background-repeat: no-repeat; box-shadow: 0 0 0 1px var(--mint), 0 0 0 6px var(--bg), 0 0 0 7px var(--sky), 0 18px 50px rgba(0,0,0,.6); opacity: 0; transition: opacity .18s; }
 .loupe.on { opacity: 1; }
@@ -632,7 +746,7 @@ function buildPage() {
   $("#tbl").innerHTML = GROUPS.map(g => {
     const list = CASES.filter(c => c.g === g.id);
     return `<tr class="grp" style="--chip:${g.color}"><td colspan="4"><span></span>${g.name}<small>(${list.length})</small></td></tr>` +
-      list.map(c => `<tr><td><a href="#s-${c.id}">${esc(c.name)}</a>${c.off ? `<span class="off">not in the lab</span>` : ""}</td><td>${esc(c.ap)}</td><td>${esc(c.action)}</td><td>${esc(c.use)}</td></tr>`).join("");
+      list.map(c => `<tr><td><a href="#s-${c.id}">${esc(c.name)}</a>${c.off ? `<span class="off">not in the lab</span>` : ""}</td><td data-h="Active principle">${esc(c.ap)}</td><td data-h="Action">${esc(c.action)}</td><td data-h="Use">${esc(c.use)}</td></tr>`).join("");
   }).join("");
   const cols = [["counter", "urinary", "cardiac", "expect"], ["parasym", "spinal", "cestode", "astring", "demul"], ["purg", "carmin"], ["stomach"]];
   $("#idx").innerHTML = cols.map(col => `<div>${col.map(id => { const g = GROUPS.find(x => x.id === id); return `<div class="idx" style="--chip:${g.color};margin-bottom:24px"><h3>${g.name}</h3><ul>${CASES.filter(c => c.g === id).map(c => `<li><a href="#s-${c.id}">${c.no}. ${esc(c.name)}</a></li>`).join("")}</ul></div>`; }).join("")}</div>`).join("");
