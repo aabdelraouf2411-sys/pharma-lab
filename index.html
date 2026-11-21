@@ -326,6 +326,45 @@ html.in-room, html.in-room body { overflow: hidden; }
 .missed li { padding-block: 8px; border-top: 1px solid var(--edge); display: flex; flex-wrap: wrap; gap: 4px 12px; }
 .missed li span { color: var(--muted); }
 
+/* Study mode: one long scroll, every photo with its answer underneath, nothing to open */
+.nav-study { color: var(--mint); font-weight: 700 !important; }
+.btn-study { grid-column: 1 / -1; display: inline-block; text-decoration: none; padding: 13px 20px; border-radius: 3px; background: var(--sky); color: var(--ink); font-weight: 700; font-size: 1rem; line-height: 1.25; text-align: center; transition: background-color .15s; }
+.btn-study:hover { background: #A6D8FF; }
+.starts .btn-study { flex-basis: 100%; }
+@media (min-width: 700px) { .starts .btn-study { flex-basis: auto; } }
+html.in-study, html.in-study body { overflow: hidden; }
+.study { position: fixed; inset: 0; z-index: 45; background: var(--bg); overflow-y: auto; overscroll-behavior: contain; scroll-padding-top: 120px; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.st-bar { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--edge); padding-top: env(safe-area-inset-top, 0px); }
+.st-bar-in { max-width: 900px; margin-inline: auto; display: flex; align-items: center; gap: 8px 14px; padding: 10px 20px 6px; }
+.st-bar .btn-quiet { padding: 8px 14px; font-size: .875rem; }
+.st-jump { max-width: 900px; margin-inline: auto; display: flex; gap: 6px; overflow-x: auto; padding: 4px 20px 10px; scrollbar-width: none; }
+.st-jump::-webkit-scrollbar { display: none; }
+.st-jump a { flex: none; text-decoration: none; padding: 5px 10px; border-radius: 3px; font-size: .8125rem; font-weight: 600; background: var(--chip); color: var(--ink); white-space: nowrap; }
+.st-jump a.dark { color: var(--white); }
+.st-body { max-width: 900px; margin-inline: auto; padding: 8px 20px 80px; }
+.st-group { padding-top: 36px; }
+.st-group > h2 { font-size: clamp(1.75rem, 4vw, 2.75rem); padding-bottom: 10px; margin-bottom: 8px; border-bottom: 3px solid var(--chip); }
+.st-card { display: grid; gap: 12px; padding-block: 26px; border-bottom: 1px solid var(--edge); }
+.st-card:last-child { border-bottom: 0; }
+.st-card .pairpics img { height: clamp(220px, 40vw, 380px); }
+.st-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.st-head .case-no { font-size: 1rem; color: var(--muted); }
+.st-head h3 { font-size: clamp(1.625rem, 3.4vw, 2.25rem); line-height: 1.1; width: 100%; }
+.st-card .facts4 > div { grid-template-columns: 160px minmax(0, 1fr); }
+.st-top { display: block; margin: 40px auto 0; }
+@media (max-width: 699px) {
+  .btn-study { font-size: .9375rem; padding: 13px 12px; }
+  .st-bar-in { padding: 8px 14px 4px; }
+  .st-jump { padding: 4px 14px 8px; }
+  .st-body { padding: 0 14px 60px; }
+  .st-group { padding-top: 26px; }
+  .st-card { padding-block: 20px; gap: 10px; }
+  .st-card .pairpics img { height: 200px; }
+  .st-card .facts4 > div { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .st-head h3 { font-size: 1.5rem; }
+}
+@media (max-width: 360px) { .st-card .pairpics { grid-template-columns: minmax(0, 1fr) !important; } .st-card .pairpics img { height: 180px; } }
+
 /* Phones: everything fits the screen width, nothing scrolls sideways, photos and type scale down */
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 @media (max-width: 699px) {
@@ -452,6 +491,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   <div class="wrap">
     <a class="brand" href="#top">Pharma <i>Lab</i></a>
     <nav aria-label="Sections">
+      <a href="#study" class="nav-study">Study mode</a>
       <a href="#train">Practice</a>
       <a href="#format">How to answer</a>
       <a href="#atlas">Samples</a>
@@ -473,6 +513,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         <div class="starts">
           <button type="button" class="btn-main" id="h-start">Start a mock paper</button>
           <button type="button" class="btn-quiet" id="h-drill">Quick drill</button>
+          <a class="btn-study" href="#study">Study mode: scroll through all 27 with the answers</a>
         </div>
         <p class="so-far" id="h-sofar">Every sample asks for four things: the <b>name</b>, the <b>active principle</b>, the <b>action</b> and the <b>therapeutic use</b>.</p>
       </div>
@@ -627,6 +668,18 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   </div>
 </footer>
 
+<div class="study" id="study-view" hidden role="dialog" aria-modal="true" aria-labelledby="st-title">
+  <div class="st-bar">
+    <div class="st-bar-in">
+      <span class="room-title" id="st-title">Study mode</span>
+      <span class="count" id="st-count">27 samples</span>
+      <span class="spacer"></span>
+      <a class="btn-quiet" href="#top" id="st-close">Close</a>
+    </div>
+    <nav class="st-jump" id="st-jump" aria-label="Jump to a group"></nav>
+  </div>
+  <div class="st-body" id="st-body"></div>
+</div>
 <div class="room" id="room" hidden><div class="room-bar"><div class="room-bar-in" id="room-bar"></div><div class="qtrack"><i id="qtrack"></i></div></div><div class="room-body" id="room-body"></div></div>
 <div class="loupe" id="loupe" aria-hidden="true"></div>
 
@@ -953,8 +1006,43 @@ $("#h-try").onclick = () => { $("#h-try").hidden = true; tryOne(); };
 $("#h-next").onclick = tryOne;
 $("#h-show").onclick = () => { const c = tryCase; $("#h-ans").innerHTML = `<p class="name">${esc(c.name)}</p>${facts(c)}`; $("#h-ans").hidden = false; $("#h-show").hidden = true; };
 
+/* Study mode */
+function buildStudy() {
+  $("#st-count").textContent = CASES.length + " samples";
+  $("#st-jump").innerHTML = GROUPS.map(g => `<a href="#st-${g.id}" data-jump="st-${g.id}" class="${g.dark ? "dark" : ""}" style="--chip:${g.color}">${g.name}</a>`).join("");
+  $("#st-body").innerHTML = GROUPS.map(g => `<section class="st-group" id="st-${g.id}" style="--chip:${g.color}"><h2>${g.name}</h2>` +
+    CASES.filter(c => c.g === g.id).map(c => `<article class="st-card">
+      ${pics(c)}
+      <div class="st-head"><p class="case-no">Sample ${c.no}</p>${c.off ? `<span class="note">Not in the lab yet</span>` : ""}<h3>${esc(c.name)}</h3></div>
+      ${facts(c)}
+      ${creditLine(c)}
+    </article>`).join("") + `</section>`).join("") +
+    `<button type="button" class="btn-quiet st-top" id="st-top">Back to the first sample</button>`;
+  $("#st-jump").addEventListener("click", e => {
+    const a = e.target.closest("[data-jump]"); if (!a) return; e.preventDefault();
+    const t = document.getElementById(a.dataset.jump); const v = $("#study-view");
+    v.scrollTo({ top: t.offsetTop - $(".st-bar").offsetHeight + 1, behavior: "smooth" });
+  });
+  $("#st-top").onclick = () => $("#study-view").scrollTo({ top: 0, behavior: "smooth" });
+}
+let studyBuilt = false, studyReturn = 0;
+function openStudy() {
+  if (!studyBuilt) { buildStudy(); studyBuilt = true; }
+  studyReturn = scrollY;
+  $("#study-view").hidden = false; document.documentElement.classList.add("in-study");
+}
+function closeStudy() {
+  $("#study-view").hidden = true; document.documentElement.classList.remove("in-study");
+  scrollTo(0, studyReturn);
+}
+function syncStudy() { if (location.hash === "#study") openStudy(); else if (!$("#study-view").hidden) closeStudy(); }
+addEventListener("hashchange", syncStudy);
+$("#st-close").onclick = e => { e.preventDefault(); try { history.pushState("", "", location.pathname + location.search); } catch (err) { try { location.hash = ""; } catch (e2) {} } closeStudy(); };
+document.addEventListener("click", e => { const a = e.target.closest && e.target.closest('a[href="#study"]'); if (a && location.hash === "#study") { e.preventDefault(); openStudy(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#study-view").hidden) $("#st-close").click(); });
+
 /* Wiring */
-buildPage(); updateTotal(); renderDash();
+buildPage(); updateTotal(); renderDash(); syncStudy();
 $("#t-start").onclick = startMock;
 $("#h-start").onclick = startMock;
 $("#t-drill").onclick = () => startDrill();
